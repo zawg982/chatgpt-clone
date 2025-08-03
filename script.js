@@ -1,8 +1,8 @@
+const OPENROUTER_API_KEY = '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';
+
 const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const chatLog = document.getElementById('chat-log');
-
-const OPENROUTER_API_KEY = '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'; // Replace this!
 
 chatForm.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -11,39 +11,46 @@ chatForm.addEventListener('submit', async (e) => {
 
   addMessage('user', userMsg);
   chatInput.value = '';
-  addMessage('bot', '...'); // typing...
+  addMessage('bot', '...'); // Show typing
 
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'mistral/mistral-7b-instruct',
-      messages: [
-        { role: 'system', content: 'You are a helpful assistant.' },
-        { role: 'user', content: userMsg }
-      ]
-    })
-  });
+  try {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://zawg982.github.io/chatgpt-clone/',
+        'X-Title': 'ChatGPT Clone'
+      },
+      body: JSON.stringify({
+        model: 'openai/gpt-4o',
+        messages: [
+          { role: 'system', content: 'You are a helpful assistant.' },
+          { role: 'user', content: userMsg }
+        ]
+      })
+    });
 
-  const data = await res.json();
-  const botReply = data.choices?.[0]?.message?.content || "Error getting response.";
-  updateLastBotMessage(botReply);
+    const data = await response.json();
+    const reply = data.choices?.[0]?.message?.content || 'No reply';
+    updateLastBotMessage(reply);
+  } catch (err) {
+    updateLastBotMessage('Error contacting AI.');
+    console.error(err);
+  }
 });
 
 function addMessage(role, text) {
-  const msgDiv = document.createElement('div');
-  msgDiv.className = `chat-bubble ${role}`;
-  msgDiv.textContent = text;
-  chatLog.appendChild(msgDiv);
+  const msg = document.createElement('div');
+  msg.className = `chat-bubble ${role}`;
+  msg.textContent = text;
+  chatLog.appendChild(msg);
   chatLog.scrollTop = chatLog.scrollHeight;
 }
 
 function updateLastBotMessage(text) {
-  const last = [...chatLog.querySelectorAll('.chat-bubble')].pop();
-  if (last && last.classList.contains('bot')) {
-    last.textContent = text;
+  const bubbles = chatLog.querySelectorAll('.chat-bubble.bot');
+  if (bubbles.length > 0) {
+    bubbles[bubbles.length - 1].textContent = text;
   }
 }
