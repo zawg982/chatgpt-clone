@@ -2,7 +2,7 @@ const chatForm = document.getElementById('chat-form');
 const chatInput = document.getElementById('chat-input');
 const chatLog = document.getElementById('chat-log');
 
-const OPENROUTER_API_KEY = 'your-api-key-here'; // Replace this!
+const OPENROUTER_API_KEY = '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'; // Replace this!
 
 chatForm.addEventListener('submit', async (e) => {
   e.preventDefault();
