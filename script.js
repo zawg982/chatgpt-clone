@@ -23,7 +23,7 @@ chatForm.addEventListener('submit', async (e) => {
         'X-Title': 'ChatGPT Clone'
       },
       body: JSON.stringify({
-        model: 'openai/gpt-4o',
+        model: 'openai/gpt-3.5-turbo',
         messages: [
           { role: 'system', content: 'You are a helpful assistant.' },
           { role: 'user', content: userMsg }
